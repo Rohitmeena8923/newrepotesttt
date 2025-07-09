@@ -624,7 +624,6 @@ async def txt_handler(bot: Client, m: Message):
 
     except Exception as e:
         await editable.edit("❌ Error reading file. Check file format or content.")
-except Exception as e:
     try:
         input0: Message = await bot.listen(editable.chat.id, timeout=20)
         raw_text = input0.text
