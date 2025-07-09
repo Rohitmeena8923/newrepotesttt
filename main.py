@@ -564,58 +564,61 @@ async def txt_handler(bot: Client, m: Message):
     await input.delete(True)
     file_name, ext = os.path.splitext(os.path.basename(x))  # Extract filename & extension
     path = f"./downloads/{m.chat.id}"
-    
-    pdf_count = 0
-    img_count = 0
-    v2_count = 0
-    mpd_count = 0
-    m3u8_count = 0
-    yt_count = 0
-    drm_count = 0
-    zip_count = 0
-    other_count = 0
-    
-    try:    
-        with open(x, "r") as f:
-            content = f.read()
-        content = content.split("\n")
-        
-       links = []
-for i in content:
-    if "://" in i:
-        url = i.split("://", 1)[1]
-        links.append(i.split("://", 1))
 
-        # ✅ Correct Order: Detect DRM before m3u8
-        if "classplusapp.com/drm/" in url or "media-cdn.classplusapp.com/drm/" in url:
-            drm_count += 1
-        elif ".pdf" in url:
-            pdf_count += 1
-        elif url.endswith((".png", ".jpeg", ".jpg")):
-            img_count += 1
-        elif "v2" in url:
-            v2_count += 1
-        elif "mpd" in url:
-            mpd_count += 1
-        elif "m3u8" in url:
-            m3u8_count += 1
-        elif "youtu" in url:
-            yt_count += 1
-        elif "zip" in url:
-            zip_count += 1
-        else:
-            other_count += 1
+pdf_count = 0
+img_count = 0
+v2_count = 0
+mpd_count = 0
+m3u8_count = 0
+yt_count = 0
+drm_count = 0
+zip_count = 0
+other_count = 0
 
-# Show the summary message
-await editable.edit(
-    f"**Total 🔗 links found are {len(links)}\n<blockquote>"
-    f"•PDF : {pdf_count}      •V2 : {v2_count}\n"
-    f"•Img : {img_count}      •YT : {yt_count}\n"
-    f"•zip : {zip_count}       •m3u8 : {m3u8_count}\n"
-    f"•drm : {drm_count}      •Other : {other_count}\n"
-    f"•mpd : {mpd_count}</blockquote>\n"
-    f"Send From where you want to download**"
-)
+try:    
+    with open(x, "r") as f:
+        content = f.read()
+    content = content.split("\n")
+
+    links = []  # ✅ Corrected indentation here
+
+    for i in content:
+        if "://" in i:
+            url = i.split("://", 1)[1]
+            links.append(i.split("://", 1))
+
+            # ✅ Correct Order: Detect DRM before m3u8
+            if "classplusapp.com/drm/" in url or "media-cdn.classplusapp.com/drm/" in url:
+                drm_count += 1
+            elif ".pdf" in url:
+                pdf_count += 1
+            elif url.endswith((".png", ".jpeg", ".jpg")):
+                img_count += 1
+            elif "v2" in url:
+                v2_count += 1
+            elif "mpd" in url:
+                mpd_count += 1
+            elif "m3u8" in url:
+                m3u8_count += 1
+            elif "youtu" in url:
+                yt_count += 1
+            elif "zip" in url:
+                zip_count += 1
+            else:
+                other_count += 1
+
+    await editable.edit(
+        f"**Total 🔗 links found are {len(links)}\n<blockquote>"
+        f"•PDF : {pdf_count}      •V2 : {v2_count}\n"
+        f"•Img : {img_count}      •YT : {yt_count}\n"
+        f"•zip : {zip_count}       •m3u8 : {m3u8_count}\n"
+        f"•drm : {drm_count}      •Other : {other_count}\n"
+        f"•mpd : {mpd_count}</blockquote>\n"
+        f"Send From where you want to download**"
+    )
+
+except Exception as e:
+    await editable.edit("❌ Error reading file. Check file format or content.")
     try:
         input0: Message = await bot.listen(editable.chat.id, timeout=20)
         raw_text = input0.text
